@@ -1,15 +1,21 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 #include <iostream>
+#include <filesystem>
 
-int main()
+namespace fs = std::filesystem;
+
+int main(int argc, char* argv[])
 {
+	fs::path exePath = fs::canonical(argv[0]).parent_path();
+	fs::path soundPath = exePath / "resources/sounds/178172__deitzis__deitzis.ogg";
+
     auto window = sf::RenderWindow({1920u, 1080u}, "CMake SFML Project");
     window.setFramerateLimit(144);
 
 	sf::SoundBuffer buffer;
 	sf::Music music;
-	if (buffer.loadFromFile("/home/akuburas/personal_stuff/SFML_cmake_template/sounds/761401__wkalmar__distant-transmission.wav"))
+	if (buffer.loadFromFile(soundPath.string()))
 	{
 		std::cout << "Sound loaded successfully" << std::endl;
 		sf::Sound sound;
@@ -17,7 +23,7 @@ int main()
 		sound.play();
 	}
 
-	if (music.openFromFile("/home/akuburas/personal_stuff/SFML_cmake_template/sounds/761401__wkalmar__distant-transmission.wav"))
+	if (music.openFromFile(soundPath.string()))
 	{
 		std::cout << "Music loaded successfully" << std::endl;
 		music.play();
