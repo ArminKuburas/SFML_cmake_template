@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:05 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 09:49:33 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 15:56:44 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,8 +61,16 @@ void TicTacToe::processEvents()
 
 void TicTacToe::handleMouseClick(int x, int y)
 {
-	int row = y / CELL_SIZE;
-	int col = x / CELL_SIZE;
+	sf::Vector2u windowSize = window.getSize();
+
+	float scaleX = static_cast<float>(windowSize.x) / WINDOW_SIZE;
+	float scaleY = static_cast<float>(windowSize.y) / WINDOW_SIZE;
+
+	int adjustedX = static_cast<int>(x / scaleX);
+	int adjustedY = static_cast<int>(y / scaleY);
+	
+	int row = adjustedY / CELL_SIZE;
+	int col = adjustedX / CELL_SIZE;
 	if (grid[row][col] == Player::None)
 	{
 		grid[row][col] = currentPlayer;
