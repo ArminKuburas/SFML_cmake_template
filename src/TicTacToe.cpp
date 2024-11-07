@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:05 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 15:56:44 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:30:17 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 
 TicTacToe::TicTacToe()
 {
-	window.create(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Tic Tac Toe");
+	window.create(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE + INFO_HEIGHT), "Tic Tac Toe");
 	currentPlayer = Player::X;
 	grid.resize(GRID_SIZE, std::vector<Player>(GRID_SIZE, Player::None));
 	fs::path exePath = fs::canonical("/proc/self/exe").parent_path();
@@ -27,6 +27,13 @@ TicTacToe::TicTacToe()
 	text.setFont(font);
 	text.setCharacterSize(24);
 	text.setFillColor(sf::Color::Black);
+
+	turnIndicator.setFont(font);
+	turnIndicator.setCharacterSize(24);
+	turnIndicator.setFillColor(sf::Color::Black);
+	turnIndicator.setPosition(10, 10);
+	updateTurnIndicator();
+	
 	window.setVerticalSyncEnabled(false);
 }
 
@@ -64,10 +71,10 @@ void TicTacToe::handleMouseClick(int x, int y)
 	sf::Vector2u windowSize = window.getSize();
 
 	float scaleX = static_cast<float>(windowSize.x) / WINDOW_SIZE;
-	float scaleY = static_cast<float>(windowSize.y) / WINDOW_SIZE;
+	float scaleY = static_cast<float>(windowSize.y - INFO_HEIGHT) / WINDOW_SIZE;
 
 	int adjustedX = static_cast<int>(x / scaleX);
-	int adjustedY = static_cast<int>(y / scaleY);
+	int adjustedY = static_cast<int>(y / scaleY - INFO_HEIGHT);
 	
 	int row = adjustedY / CELL_SIZE;
 	int col = adjustedX / CELL_SIZE;
@@ -139,22 +146,34 @@ void TicTacToe::render()
 	window.clear(sf::Color::White);
 	drawGrid();
 	drawMarks();
+	updateTurnIndicator();
+	window.draw(turnIndicator);
 	window.draw(text);
 	window.display();
 }
 
 void TicTacToe::drawGrid()
 {
-	for (int i = 1; i < GRID_SIZE; ++i)
+	for (int i = 0; i < GRID_SIZE; ++i)
 	{
-		sf::RectangleShape line(sf::Vector2f(WINDOW_SIZE, 5));
-		line.setFillColor(sf::Color::Black);
-		line.setPosition(0, i * CELL_SIZE - 2.5f);
-		window.draw(line);
-		line.setSize(sf::Vector2f(5, WINDOW_SIZE));
-		line.setPosition(i * CELL_SIZE - 2.5f, 0);
-		window.draw(line);
+		sf::RectangleShape hLine(sf::Vector2f(WINDOW_SIZE, 5));
+		hLine.setFillColor(sf::Color::Black);
+		hLine.setPosition(0, i * CELL_SIZE + INFO_HEIGHT - 2.5f);
+		window.draw(hLine);
+		
+		sf::RectangleShape vLine(sf::Vector2f(5, WINDOW_SIZE));
+		vLine.setFillColor(sf::Color::Black);
+		vLine.setPosition(i * CELL_SIZE - 2.5f, INFO_HEIGHT);
+		window.draw(vLine);	
 	}
+	sf::RectangleShape bottomLine(sf::Vector2f(WINDOW_SIZE, 5));
+	bottomLine.setFillColor(sf::Color::Black);
+	bottomLine.setPosition(0, WINDOW_SIZE + INFO_HEIGHT - 2.5f);
+	window.draw(bottomLine);
+	sf::RectangleShape rightLine(sf::Vector2f(5, WINDOW_SIZE));
+	rightLine.setFillColor(sf::Color::Black);
+	rightLine.setPosition(WINDOW_SIZE - 2.5f, INFO_HEIGHT);
+	window.draw(rightLine);
 }
 
 void TicTacToe::drawMarks()
@@ -167,16 +186,22 @@ void TicTacToe::drawMarks()
 			{
 				sf::Text mark("X", font, 100);
 				mark.setFillColor(sf::Color::Red);
-				mark.setPosition(col * CELL_SIZE + 50, row * CELL_SIZE + 50);
+				mark.setPosition(col * CELL_SIZE + 70, row * CELL_SIZE + 70 + INFO_HEIGHT);
 				window.draw(mark);
 			}
 			else if (grid[row][col] == Player::O)
 			{
 				sf::Text mark("O", font, 100);
 				mark.setFillColor(sf::Color::Blue);
-				mark.setPosition(col * CELL_SIZE + 50, row * CELL_SIZE + 50);
+				mark.setPosition(col * CELL_SIZE + 70, row * CELL_SIZE + 70 + INFO_HEIGHT);
 				window.draw(mark);
 			}
 		}
 	}
+}
+
+void TicTacToe::updateTurnIndicator()
+{
+	turnIndicator.setString("Turn: " + std::string(currentPlayer == Player::X ? "X" : "O"));
+	turnIndicator.setFillColor(currentPlayer == Player::X ? sf::Color::Red : sf::Color::Blue);
 }

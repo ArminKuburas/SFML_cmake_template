@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:08 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 09:43:50 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 16:06:21 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@ namespace fs = std::filesystem;
 const int GRID_SIZE = 3;
 const int CELL_SIZE = 200;
 const int WINDOW_SIZE = GRID_SIZE * CELL_SIZE;
+const int INFO_HEIGHT = 50;
 
 enum class Player { None, X, O };
 
@@ -37,6 +38,7 @@ class TicTacToe
 		Player currentPlayer;
 		sf::Font font;
 		sf::Text text;
+		sf::Text turnIndicator;
 
 		void processEvents();
 		void handleMouseClick(int x, int y);
@@ -46,4 +48,5 @@ class TicTacToe
 		void render();
 		void drawGrid();
 		void drawMarks();
+		void updateTurnIndicator();
 };
