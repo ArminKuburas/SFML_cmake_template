@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:08 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 21:58:34 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 22:09:52 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,7 @@ class TicTacToe
 		sf::Text turnIndicator;
 		sf::Text resultText;
 		sf::Text rematchPrompt;
+		sf::Text WinDrawText;
 		int xWins;
 		int oWins;
 		int draws;

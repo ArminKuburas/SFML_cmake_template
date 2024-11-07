@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:05 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 21:38:33 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 22:31:32 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,32 @@ TicTacToe::TicTacToe()
 	turnIndicator.setCharacterSize(24);
 	turnIndicator.setFillColor(sf::Color::Black);
 	turnIndicator.setPosition(10, 10);
+
+	resultText.setFont(font);
+	resultText.setCharacterSize(50);
+	resultText.setFillColor(sf::Color::Black);
+	resultText.setPosition(WINDOW_SIZE / 2 - 70, WINDOW_SIZE / 2 - 50);
+
+	rematchPrompt.setFont(font);
+	rematchPrompt.setCharacterSize(22);
+	rematchPrompt.setFillColor(sf::Color::White);
+	rematchPrompt.setOutlineColor(sf::Color::Black);
+	rematchPrompt.setOutlineThickness(2);
+	rematchPrompt.setPosition(WINDOW_SIZE / 2 - 100, WINDOW_SIZE / 2 + 50);
+	rematchPrompt.setString("Press R to rematch");
+
+	WinDrawText.setFont(font);
+	WinDrawText.setCharacterSize(24);
+	WinDrawText.setFillColor(sf::Color::Black);
+	WinDrawText.setPosition(100, 10);
+	
+	xWins = 0;
+	oWins = 0;
+	draws = 0;
+
+	
+	
+	
 	updateTurnIndicator();
 	
 	window.setVerticalSyncEnabled(false);
@@ -88,13 +114,94 @@ void TicTacToe::handleMouseClick(int x, int y)
 		grid[row][col] = currentPlayer;
 		if (checkWin(currentPlayer))
 		{
-			std::cout << "Player " << (currentPlayer == Player::X ? "X" : "O") << " wins!" << std::endl;
-			window.close();
+			if (currentPlayer == Player::X)
+			{
+				++xWins;
+			}
+			else
+			{
+				++oWins;
+			}
+			window.clear(sf::Color::White);
+			drawGrid();
+			drawMarks();
+			updateTurnIndicator();
+			resultText.setString(std::string(currentPlayer == Player::X ? "X" : "O") + " wins!");
+			WinDrawText.setString("X wins: " + std::to_string(xWins) + " O wins: " + std::to_string(oWins) + " Draws: " + std::to_string(draws));
+			window.draw(resultText);
+			window.draw(WinDrawText);
+			window.draw(rematchPrompt);
+			window.display();
+			while (true && window.isOpen())
+			{
+				sf::Event event;
+				while (window.pollEvent(event))
+				{
+					if (event.type == sf::Event::Closed)
+					{
+						window.close();
+					}
+					else if (event.type == sf::Event::KeyPressed)
+					{
+						if (event.key.code == sf::Keyboard::R)
+						{
+							resetGame();
+							return;
+						}
+					}
+				}
+			}
+			{
+				sf::Event event;
+				while (window.pollEvent(event))
+				{
+					if (event.type == sf::Event::Closed)
+					{
+						window.close();
+					}
+					else if (event.type == sf::Event::KeyPressed)
+					{
+						if (event.key.code == sf::Keyboard::R)
+						{
+							resetGame();
+							return;
+						}
+					}
+				}
+			}
 		}
 		else if (checkDraw())
 		{
-			std::cout << "Draw!" << std::endl;
-			window.close();
+			draws++;
+			window.clear(sf::Color::White);
+			drawGrid();
+			drawMarks();
+			updateTurnIndicator();
+			resultText.setString("Draw!");
+			WinDrawText.setString("X wins: " + std::to_string(xWins) + " O wins: " + std::to_string(oWins) + " Draws: " + std::to_string(draws));
+			window.draw(resultText);
+			window.draw(WinDrawText);
+			window.draw(rematchPrompt);
+			window.display();
+			while (true && window.isOpen())
+			{
+				sf::Event event;
+				while (window.pollEvent(event))
+				{
+					if (event.type == sf::Event::Closed)
+					{
+						window.close();
+					}
+					else if (event.type == sf::Event::KeyPressed)
+					{
+						if (event.key.code == sf::Keyboard::R)
+						{
+							resetGame();
+							return;
+						}
+					}
+				}
+			}
 		}
 		else
 		{
@@ -152,6 +259,7 @@ void TicTacToe::render()
 	drawGrid();
 	drawMarks();
 	updateTurnIndicator();
+	window.draw(WinDrawText);
 	window.draw(turnIndicator);
 	window.draw(text);
 	window.display();
@@ -209,4 +317,12 @@ void TicTacToe::updateTurnIndicator()
 {
 	turnIndicator.setString("Turn: " + std::string(currentPlayer == Player::X ? "X" : "O"));
 	turnIndicator.setFillColor(currentPlayer == Player::X ? sf::Color::Red : sf::Color::Blue);
+}
+
+void TicTacToe::resetGame()
+{
+	grid = std::vector<std::vector<Player>>(GRID_SIZE, std::vector<Player>(GRID_SIZE, Player::None));
+	currentPlayer = Player::X;
+	resultText.setString("");
+	updateTurnIndicator();
 }
