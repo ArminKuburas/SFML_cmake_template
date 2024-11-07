@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:05 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 16:30:17 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 21:38:33 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,11 @@ void TicTacToe::handleMouseClick(int x, int y)
 	int adjustedX = static_cast<int>(x / scaleX);
 	int adjustedY = static_cast<int>(y / scaleY - INFO_HEIGHT);
 	
+	if (adjustedX < 0 || adjustedX >= WINDOW_SIZE || adjustedY < 0 || adjustedY >= WINDOW_SIZE)
+	{
+		return;
+	}
+
 	int row = adjustedY / CELL_SIZE;
 	int col = adjustedX / CELL_SIZE;
 	if (grid[row][col] == Player::None)
@@ -186,14 +191,14 @@ void TicTacToe::drawMarks()
 			{
 				sf::Text mark("X", font, 100);
 				mark.setFillColor(sf::Color::Red);
-				mark.setPosition(col * CELL_SIZE + 70, row * CELL_SIZE + 70 + INFO_HEIGHT);
+				mark.setPosition(col * CELL_SIZE + 60, row * CELL_SIZE + 40 + INFO_HEIGHT);
 				window.draw(mark);
 			}
 			else if (grid[row][col] == Player::O)
 			{
 				sf::Text mark("O", font, 100);
 				mark.setFillColor(sf::Color::Blue);
-				mark.setPosition(col * CELL_SIZE + 70, row * CELL_SIZE + 70 + INFO_HEIGHT);
+				mark.setPosition(col * CELL_SIZE + 60, row * CELL_SIZE + 40 + INFO_HEIGHT);
 				window.draw(mark);
 			}
 		}

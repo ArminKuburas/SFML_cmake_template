@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:08 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 16:06:21 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 21:58:34 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,11 @@ class TicTacToe
 		sf::Font font;
 		sf::Text text;
 		sf::Text turnIndicator;
+		sf::Text resultText;
+		sf::Text rematchPrompt;
+		int xWins;
+		int oWins;
+		int draws;
 
 		void processEvents();
 		void handleMouseClick(int x, int y);
@@ -49,4 +54,5 @@ class TicTacToe
 		void drawGrid();
 		void drawMarks();
 		void updateTurnIndicator();
+		void resetGame();
 };
