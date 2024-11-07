@@ -6,24 +6,28 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:05 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 00:55:19 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/07 09:49:33 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TicTacToe.hpp"
+
 
 TicTacToe::TicTacToe()
 {
 	window.create(sf::VideoMode(WINDOW_SIZE, WINDOW_SIZE), "Tic Tac Toe");
 	currentPlayer = Player::X;
 	grid.resize(GRID_SIZE, std::vector<Player>(GRID_SIZE, Player::None));
-	if (!font.loadFromFile("resources/fonts/Arial.ttf"))
+	fs::path exePath = fs::canonical("/proc/self/exe").parent_path();
+	fs::path fontPath = exePath / "resources/fonts/Arial.ttf";
+	if (!font.loadFromFile(fontPath.string()))
 	{
 		throw std::runtime_error("Could not load font");
 	}
 	text.setFont(font);
 	text.setCharacterSize(24);
 	text.setFillColor(sf::Color::Black);
+	window.setVerticalSyncEnabled(false);
 }
 
 void TicTacToe::run()

@@ -22,6 +22,7 @@ add_custom_command(
     TARGET main POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:main>/resources
     COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:main>/resources/sounds
+	COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_FILE_DIR:main>/resources/fonts
 )
 
 # Copy resources to the output directory
@@ -30,6 +31,14 @@ foreach(SOUND_FILE ${SOUND_FILES})
     add_custom_command(
         TARGET main POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E copy ${SOUND_FILE} $<TARGET_FILE_DIR:main>/resources/sounds
+    )
+endforeach()
+
+file(GLOB FONT_FILES "${CMAKE_SOURCE_DIR}/resources/fonts/*")
+foreach(FONT_FILE ${FONT_FILES})
+    add_custom_command(
+        TARGET main POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy ${FONT_FILE} $<TARGET_FILE_DIR:main>/resources/fonts
     )
 endforeach()
 
