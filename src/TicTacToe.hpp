@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:08 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 22:09:52 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/08 10:11:14 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ const int WINDOW_SIZE = GRID_SIZE * CELL_SIZE;
 const int INFO_HEIGHT = 50;
 
 enum class Player { None, X, O };
+enum class GameMode { None, PlayerVsPlayer, PlayerVsBeginnerAI, PlayerVsAdvancedAI };
 
 class TicTacToe
 {
@@ -36,12 +37,17 @@ class TicTacToe
 		sf::RenderWindow window;
 		std::vector<std::vector<Player>> grid;
 		Player currentPlayer;
+		GameMode gameMode;
 		sf::Font font;
 		sf::Text text;
 		sf::Text turnIndicator;
 		sf::Text resultText;
 		sf::Text rematchPrompt;
 		sf::Text WinDrawText;
+		sf::Text startPrompt;
+		sf::Text PlayerVsPlayerPrompt;
+		sf::Text PlayerVsBeginnerAIPrompt;
+		sf::Text PlayerVsAdvancedAIPrompt;
 		int xWins;
 		int oWins;
 		int draws;
@@ -56,4 +62,8 @@ class TicTacToe
 		void drawMarks();
 		void updateTurnIndicator();
 		void resetGame();
+		void showStartScreen();
+		void handleStartScreenClick(int x, int y);
+		void makeBotMove();
+		int minimax(std::vector<std::vector<Player>> grid, bool isMaximizing);
 };

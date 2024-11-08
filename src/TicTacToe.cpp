@@ -6,11 +6,12 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:05 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/07 22:31:32 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/08 10:20:30 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "TicTacToe.hpp"
+#include <random>
 
 
 TicTacToe::TicTacToe()
@@ -50,14 +51,36 @@ TicTacToe::TicTacToe()
 	WinDrawText.setCharacterSize(24);
 	WinDrawText.setFillColor(sf::Color::Black);
 	WinDrawText.setPosition(100, 10);
+
+	startPrompt.setFont(font);
+	startPrompt.setCharacterSize(24);
+	startPrompt.setFillColor(sf::Color::Black);
+	startPrompt.setPosition(WINDOW_SIZE / 2 - 100, WINDOW_SIZE / 2 - 100);
+	startPrompt.setString("Choose game mode:");
 	
+	PlayerVsPlayerPrompt.setFont(font);
+	PlayerVsPlayerPrompt.setCharacterSize(24);
+	PlayerVsPlayerPrompt.setFillColor(sf::Color::Black);
+	PlayerVsPlayerPrompt.setPosition(WINDOW_SIZE / 2 - 100, WINDOW_SIZE / 2 - 50);
+	PlayerVsPlayerPrompt.setString("1. Player vs Player");
+
+	PlayerVsBeginnerAIPrompt.setFont(font);
+	PlayerVsBeginnerAIPrompt.setCharacterSize(24);
+	PlayerVsBeginnerAIPrompt.setFillColor(sf::Color::Black);
+	PlayerVsBeginnerAIPrompt.setPosition(WINDOW_SIZE / 2 - 100, WINDOW_SIZE / 2);
+	PlayerVsBeginnerAIPrompt.setString("2. Player vs Beginner AI");
+
+	PlayerVsAdvancedAIPrompt.setFont(font);
+	PlayerVsAdvancedAIPrompt.setCharacterSize(24);
+	PlayerVsAdvancedAIPrompt.setFillColor(sf::Color::Black);
+	PlayerVsAdvancedAIPrompt.setPosition(WINDOW_SIZE / 2 - 100, WINDOW_SIZE / 2 + 50);
+	PlayerVsAdvancedAIPrompt.setString("3. Player vs Advanced AI");
+	
+	gameMode = GameMode::None;
 	xWins = 0;
 	oWins = 0;
 	draws = 0;
 
-	
-	
-	
 	updateTurnIndicator();
 	
 	window.setVerticalSyncEnabled(false);
@@ -86,7 +109,14 @@ void TicTacToe::processEvents()
 		{
 			if (event.mouseButton.button == sf::Mouse::Left)
 			{
-				handleMouseClick(event.mouseButton.x, event.mouseButton.y);
+				if (gameMode == GameMode::None)
+				{
+					handleStartScreenClick(event.mouseButton.x, event.mouseButton.y);
+				}
+				else
+				{
+					handleMouseClick(event.mouseButton.x, event.mouseButton.y);
+				}
 			}
 		}
 	}
@@ -206,6 +236,11 @@ void TicTacToe::handleMouseClick(int x, int y)
 		else
 		{
 			currentPlayer = (currentPlayer == Player::X) ? Player::O : Player::X;
+			updateTurnIndicator();
+			if (gameMode != GameMode::PlayerVsPlayer)
+			{
+				makeBotMove();
+			}
 		}
 	}
 }
@@ -255,6 +290,12 @@ void TicTacToe::update()
 
 void TicTacToe::render()
 {
+	if (gameMode == GameMode::None)
+	{
+		showStartScreen();
+	}
+	else
+	{
 	window.clear(sf::Color::White);
 	drawGrid();
 	drawMarks();
@@ -263,6 +304,7 @@ void TicTacToe::render()
 	window.draw(turnIndicator);
 	window.draw(text);
 	window.display();
+	}
 }
 
 void TicTacToe::drawGrid()
@@ -325,4 +367,74 @@ void TicTacToe::resetGame()
 	currentPlayer = Player::X;
 	resultText.setString("");
 	updateTurnIndicator();
+}
+
+void TicTacToe::showStartScreen()
+{
+	window.clear(sf::Color::White);
+	window.draw(startPrompt);
+	window.draw(PlayerVsPlayerPrompt);
+	window.draw(PlayerVsBeginnerAIPrompt);
+	window.draw(PlayerVsAdvancedAIPrompt);
+	window.display();
+}
+
+void TicTacToe::handleStartScreenClick(int x, int y)
+{
+	sf::Vector2u windowSize = window.getSize();
+
+	float scaleX = static_cast<float>(windowSize.x) / WINDOW_SIZE;
+	float scaleY = static_cast<float>(windowSize.y - INFO_HEIGHT) / WINDOW_SIZE;
+
+	int adjustedX = static_cast<int>(x / scaleX);
+	int adjustedY = static_cast<int>(y / scaleY - INFO_HEIGHT);
+
+	if (adjustedX < 0 || adjustedX >= WINDOW_SIZE || adjustedY < 0 || adjustedY >= WINDOW_SIZE)
+	{
+		return;
+	}
+
+	if (adjustedX >= PlayerVsPlayerPrompt.getPosition().x && adjustedX <= PlayerVsPlayerPrompt.getPosition().x + PlayerVsPlayerPrompt.getGlobalBounds().width &&
+		adjustedY >= PlayerVsPlayerPrompt.getPosition().y && adjustedY <= PlayerVsPlayerPrompt.getPosition().y + PlayerVsPlayerPrompt.getGlobalBounds().height)
+	{
+		gameMode = GameMode::PlayerVsPlayer;
+	}
+	else if (adjustedX >= PlayerVsBeginnerAIPrompt.getPosition().x && adjustedX <= PlayerVsBeginnerAIPrompt.getPosition().x + PlayerVsBeginnerAIPrompt.getGlobalBounds().width &&
+		adjustedY >= PlayerVsBeginnerAIPrompt.getPosition().y && adjustedY <= PlayerVsBeginnerAIPrompt.getPosition().y + PlayerVsBeginnerAIPrompt.getGlobalBounds().height)
+	{
+		gameMode = GameMode::PlayerVsBeginnerAI;
+	}
+	else if (adjustedX >= PlayerVsAdvancedAIPrompt.getPosition().x && adjustedX <= PlayerVsAdvancedAIPrompt.getPosition().x + PlayerVsAdvancedAIPrompt.getGlobalBounds().width &&
+		adjustedY >= PlayerVsAdvancedAIPrompt.getPosition().y && adjustedY <= PlayerVsAdvancedAIPrompt.getPosition().y + PlayerVsAdvancedAIPrompt.getGlobalBounds().height)
+	{
+		gameMode = GameMode::PlayerVsAdvancedAI;
+	}
+}
+
+void TicTacToe::makeBotMove()
+{
+	if (gameMode == GameMode::PlayerVsBeginnerAI)
+	{
+		std::vector<std::pair<int, int>> availableMoves;
+		for (int row = 0; row < GRID_SIZE; ++row)
+		{
+			for (int col = 0; col < GRID_SIZE; ++col)
+			{
+				if (grid[row][col] == Player::None)
+				{
+					availableMoves.push_back(std::make_pair(row, col));
+				}
+			}
+		}
+		if (availableMoves.empty())
+		{
+			return;
+		}
+		std::random_device rd;
+		std::mt19937 gen(rd());
+		std::uniform_int_distribution<> dis(0, availableMoves.size() - 1);
+		int index = dis(gen);
+		grid[availableMoves[index].first][availableMoves[index].second] = currentPlayer;
+	}
+	else
 }
