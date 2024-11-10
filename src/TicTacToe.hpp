@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:08 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/08 10:11:14 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/10 16:33:01 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,4 +66,7 @@ class TicTacToe
 		void handleStartScreenClick(int x, int y);
 		void makeBotMove();
 		int minimax(std::vector<std::vector<Player>> grid, bool isMaximizing);
+		bool handleRematchPrompt();
+		void handleWin();
+		void handleDraw();
 };

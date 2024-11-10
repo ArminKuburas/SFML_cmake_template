@@ -6,7 +6,7 @@
 /*   By: akuburas <akuburas@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/11/07 00:25:05 by akuburas          #+#    #+#             */
-/*   Updated: 2024/11/08 10:20:30 by akuburas         ###   ########.fr       */
+/*   Updated: 2024/11/10 16:40:10 by akuburas         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -122,6 +122,96 @@ void TicTacToe::processEvents()
 	}
 }
 
+bool TicTacToe::handleRematchPrompt()
+{
+	if (checkWin(currentPlayer))
+	{
+		handleWin();
+		return true;
+	}
+	else if (checkDraw())
+	{
+		handleDraw();
+		return true;
+	}
+	return false;
+}
+
+void TicTacToe::handleWin()
+{
+	if (currentPlayer == Player::X)
+		{
+			++xWins;
+		}
+		else
+		{
+			++oWins;
+		}
+		window.clear(sf::Color::White);
+		drawGrid();
+		drawMarks();
+		updateTurnIndicator();
+		resultText.setString(std::string(currentPlayer == Player::X ? "X" : "O") + " wins!");
+		WinDrawText.setString("X wins: " + std::to_string(xWins) + " O wins: " + std::to_string(oWins) + " Draws: " + std::to_string(draws));
+		window.draw(resultText);
+		window.draw(WinDrawText);
+		window.draw(rematchPrompt);
+		window.display();
+		while (true && window.isOpen())
+		{
+			sf::Event event;
+			while (window.pollEvent(event))
+			{
+				if (event.type == sf::Event::Closed)
+				{
+					window.close();
+				}
+				else if (event.type == sf::Event::KeyPressed)
+				{
+					if (event.key.code == sf::Keyboard::R)
+					{
+						resetGame();
+						return;
+					}
+				}
+			}
+		}
+}
+
+void TicTacToe::handleDraw()
+{
+	draws++;
+	window.clear(sf::Color::White);
+	drawGrid();
+	drawMarks();
+	updateTurnIndicator();
+	resultText.setString("Draw!");
+	WinDrawText.setString("X wins: " + std::to_string(xWins) + " O wins: " + std::to_string(oWins) + " Draws: " + std::to_string(draws));
+	window.draw(resultText);
+	window.draw(WinDrawText);
+	window.draw(rematchPrompt);
+	window.display();
+	while (true && window.isOpen())
+	{
+		sf::Event event;
+		while (window.pollEvent(event))
+		{
+			if (event.type == sf::Event::Closed)
+			{
+				window.close();
+			}
+			else if (event.type == sf::Event::KeyPressed)
+			{
+				if (event.key.code == sf::Keyboard::R)
+				{
+					resetGame();
+					return;
+				}
+			}
+		}
+	}
+}
+
 void TicTacToe::handleMouseClick(int x, int y)
 {
 	sf::Vector2u windowSize = window.getSize();
@@ -142,96 +232,9 @@ void TicTacToe::handleMouseClick(int x, int y)
 	if (grid[row][col] == Player::None)
 	{
 		grid[row][col] = currentPlayer;
-		if (checkWin(currentPlayer))
+		if (handleRematchPrompt())
 		{
-			if (currentPlayer == Player::X)
-			{
-				++xWins;
-			}
-			else
-			{
-				++oWins;
-			}
-			window.clear(sf::Color::White);
-			drawGrid();
-			drawMarks();
-			updateTurnIndicator();
-			resultText.setString(std::string(currentPlayer == Player::X ? "X" : "O") + " wins!");
-			WinDrawText.setString("X wins: " + std::to_string(xWins) + " O wins: " + std::to_string(oWins) + " Draws: " + std::to_string(draws));
-			window.draw(resultText);
-			window.draw(WinDrawText);
-			window.draw(rematchPrompt);
-			window.display();
-			while (true && window.isOpen())
-			{
-				sf::Event event;
-				while (window.pollEvent(event))
-				{
-					if (event.type == sf::Event::Closed)
-					{
-						window.close();
-					}
-					else if (event.type == sf::Event::KeyPressed)
-					{
-						if (event.key.code == sf::Keyboard::R)
-						{
-							resetGame();
-							return;
-						}
-					}
-				}
-			}
-			{
-				sf::Event event;
-				while (window.pollEvent(event))
-				{
-					if (event.type == sf::Event::Closed)
-					{
-						window.close();
-					}
-					else if (event.type == sf::Event::KeyPressed)
-					{
-						if (event.key.code == sf::Keyboard::R)
-						{
-							resetGame();
-							return;
-						}
-					}
-				}
-			}
-		}
-		else if (checkDraw())
-		{
-			draws++;
-			window.clear(sf::Color::White);
-			drawGrid();
-			drawMarks();
-			updateTurnIndicator();
-			resultText.setString("Draw!");
-			WinDrawText.setString("X wins: " + std::to_string(xWins) + " O wins: " + std::to_string(oWins) + " Draws: " + std::to_string(draws));
-			window.draw(resultText);
-			window.draw(WinDrawText);
-			window.draw(rematchPrompt);
-			window.display();
-			while (true && window.isOpen())
-			{
-				sf::Event event;
-				while (window.pollEvent(event))
-				{
-					if (event.type == sf::Event::Closed)
-					{
-						window.close();
-					}
-					else if (event.type == sf::Event::KeyPressed)
-					{
-						if (event.key.code == sf::Keyboard::R)
-						{
-							resetGame();
-							return;
-						}
-					}
-				}
-			}
+			return;
 		}
 		else
 		{
@@ -435,6 +438,98 @@ void TicTacToe::makeBotMove()
 		std::uniform_int_distribution<> dis(0, availableMoves.size() - 1);
 		int index = dis(gen);
 		grid[availableMoves[index].first][availableMoves[index].second] = currentPlayer;
+		if (handleRematchPrompt())
+		{
+			return;
+		}
+		else
+		{
+			currentPlayer = (currentPlayer == Player::X) ? Player::O : Player::X;
+			updateTurnIndicator();
+		}
+	}
+	else if (gameMode == GameMode::PlayerVsAdvancedAI)
+	{
+		int bestScore = -1000;
+		std::pair<int, int> bestMove;
+		for (int row = 0; row < GRID_SIZE; ++row)
+		{
+			for (int col = 0; col < GRID_SIZE; ++col)
+			{
+				if (grid[row][col] == Player::None)
+				{
+					grid[row][col] = currentPlayer;
+					int score = minimax(grid, false);
+					grid[row][col] = Player::None;
+					if (score > bestScore)
+					{
+						bestScore = score;
+						bestMove = std::make_pair(row, col);
+					}
+				}
+			}
+		}
+		grid[bestMove.first][bestMove.second] = currentPlayer;
+		if (handleRematchPrompt())
+		{
+			return;
+		}
+		else
+		{
+			currentPlayer = (currentPlayer == Player::X) ? Player::O : Player::X;
+			updateTurnIndicator();
+		}
+	}
+}
+
+int TicTacToe::minimax(std::vector<std::vector<Player>> grid, bool isMaximizing)
+{
+	if (checkWin(Player::X))
+	{
+		return -10;
+	}
+	else if (checkWin(Player::O))
+	{
+		return 10;
+	}
+	else if (checkDraw())
+	{
+		return 0;
+	}
+	if (isMaximizing)
+	{
+		int bestScore = -1000;
+		for (int row = 0; row < GRID_SIZE; ++row)
+		{
+			for (int col = 0; col < GRID_SIZE; ++col)
+			{
+				if (grid[row][col] == Player::None)
+				{
+					grid[row][col] = Player::O;
+					int score = minimax(grid, false);
+					grid[row][col] = Player::None;
+					bestScore = std::max(bestScore, score);
+				}
+			}
+		}
+		return bestScore;
 	}
 	else
+	{
+		int bestScore = 1000;
+		for (int row = 0; row < GRID_SIZE; ++row)
+		{
+			for (int col = 0; col < GRID_SIZE; ++col)
+			{
+				if (grid[row][col] == Player::None)
+				{
+					grid[row][col] = Player::X;
+					int score = minimax(grid, true);
+					grid[row][col] = Player::None;
+					bestScore = std::min(bestScore, score);
+				}
+			}
+		}
+		return bestScore;
+	}
 }
